@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'index.css' %}">
+  <title>Todoapp</title>
+</head>
+<body>
+  <h2>This is Todo application</h2>
+  <h4>Has been written by framework Django</h4>
+  <hr/>
+  <h5>This is List Todo</h5>
+  <p>* Notice: 1 Todo can have many task</p>
+  <ul>
+    {% for i in todolist %}
+      <li>Todo Id: {{ forloop.counter }}, Title: {{i.title}}, Total task: {{i.number_of_tasks}}</li>
+      {% empty %}
+        <p>You don't have any todolist</p>
+    {% endfor %}
+  </ul>
+    <form action="addtodolist/" class="form-todolist" method="POST">
+      {% csrf_token %}
+      <div>Form new todo <input type="text" name="title" placeholder="Input title"> </div>
+      <input type="submit" value="Add">
+    </form>
+  <h5>This is list task of todo</h5>
+  <p>* Notice: Have any task in todolist</p>
+  {% comment %} <ul>
+    {% for i in tasktodo %}
+      {{ i.todo_list }}
+        <form action="donetask/{{i.id}}/" method="post">
+          {% csrf_token %}
+          <li>
+            Task Id: {{ forloop.counter }}, Task name: {{i.name_task}}
+            <span>Description: {{ i.description }}</span>
+            <input type="submit" value="Done">
+          </li>
+        </form>
+      {% empty %}
+        <p>You don't have any todolist</p>
+    {% endfor %}
+  </ul> {% endcomment %}
+  {% regroup tasktodo by todo_list as list %}
+    <ul>
+    {% for i in list %}
+      <li>{{ i.grouper }}</li>
+      <ul>
+        {% for o in i.list %}
+        <form action="donetask/{{o.id}}/" method="post">
+          {% csrf_token %}
+          <li>
+            Task Id: {{ forloop.counter }}, Task name: {{ o.name_task }}
+            <span>Description: {{ o.description }}</span>
+            <input class="button--done" type="submit" value="Done">
+          </li>
+        </form>
+        {% endfor %}
+      </ul>
+    {% endfor %}
+    </ul>
+  <form action="addtask/" method="POST">
+    {% csrf_token %}
+    <div>
+      <input type="text" name="name_task" placeholder="Task">
+      <input type="text" name="description" placeholder="description">
+      <div class="form__select">
+      <label for="todo_list">Choose the Todo have been created:</label>
+        <select name="todo_list" id="todo_list" required>
+          <option disabled="true" selected> -- Select title -- </option>
+          {% for i in todolist %}
+          <option value="{{ i.title }}"> {{i.title}} </option>
+          {% empty %}
+            <p>You have not todo list please create it on top site!</p>
+          {% endfor %}
+      </select>
+      </div>
+    </div>
+    <br/>
+    <input type="submit" value="add task">
+  </form>
+</body>
+</html>
